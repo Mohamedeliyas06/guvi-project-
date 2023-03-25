@@ -1,0 +1,121 @@
+<html>
+
+<head>
+    <title>Welcome</title>
+    <link rel="stylesheet" href="./lib/bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="./resources/style.css" />
+    <script src="./lib/jQuery/jquery.min.js"></script>
+    <script src="./lib/bootstrap/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <section class="content h-100">
+        <div class="bg-white border rounded-5">
+            <section class="h-100 gradient-form" style="background-color: #eee; position: relative;">
+                <div class="container">
+                    <div class="row d-flex justify-content-center align-items-center h-100">
+                        <div class="col-xl-10">
+                            <div class="card rounded-3 text-black">
+                                <div class="row g-0">
+                                    <div class="card-body p-md-5 mx-md-4">
+                                        <div class="text-center">
+                                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
+                                                style="width: 185px;" alt="logo">
+                                            <h4 class="mt-1 mb-5 pb-1">Welcome <span id="headerUsername"></span></h4>
+                                        </div>
+
+                                        <div class="col-lg-12">
+                                            <div class="card mb-4">
+                                                <div class="card-body">
+                                                    <div class="row">
+                                                        <div class="col-sm-3">
+                                                            <p class="mb-0">First Name</p>
+                                                        </div>
+                                                        <div class="col-sm-9">
+                                                            <p class="text-muted mb-0" id="first_name"></p>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-sm-3">
+                                                            <p class="mb-0">Last Name</p>
+                                                        </div>
+                                                        <div class="col-sm-9">
+                                                            <p class="text-muted mb-0" id="last_name"></p>
+                                                        </div>
+                                                    </div>
+                                                    <hr>
+                                                    <div class="row">
+                                                        <div class="col-sm-3">
+                                                            <p class="mb-0">Email</p>
+                                                        </div>
+                                                        <div class="col-sm-9">
+                                                            <p class="text-muted mb-0" id="email"></p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </section>
+        </div>
+    </section>
+
+</body>
+<script>
+    var profile = {};
+    profile.getCookie = function (cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    };
+    var sessionData = profile.getCookie("loginApp");
+    if(sessionData == ""){
+        location.replace("index.html");
+    }
+    $(document).ready(function () {
+
+        profile.get = function () {
+
+            $.ajax({
+                url: '/profile.php',
+                dataType: 'json',
+                type:'GET',
+                data:"user_id"+sessionData.user_id,
+                success: function (response) {
+                    if (response.status == true && response.data && !jQuery.isEmptyObject(response.data)) {
+                        var data = response.data;
+                        $("#headerUsername").text(data.first_name + " " + data.last_name);
+                        $("#first_name").text(data.last_name);
+                        $("#last_name").text(data.last_name);
+                        $("#email").text(data.email);
+                    } else {
+                        alert("Invalid Data");
+                        location.replace("index.html");
+                    }
+                },
+                error: function (response) {
+                    alert("Invalid Data");
+                    location.replace("index.html");
+                }
+            });
+        }
+        profile.get();
+    });
+</script>
+
+</html>
